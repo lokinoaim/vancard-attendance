@@ -171,32 +171,44 @@ async function loadEvents(){
    QR SCANNER
 ===================================================== */
 
-async function startQRScanner(){
+const cameras = await Html5Qrcode.getCameras();
 
-    if(scannerRunning){
-        return;
-    }
+if(cameras.length === 0){
 
+    alert("No camera detected.");
 
-    htmlScanner = new Html5Qrcode("reader");
+    return;
 
-
-    const cameras =
-    await Html5Qrcode.getCameras();
+}
 
 
-    if(cameras.length === 0){
-
-        alert("No camera detected.");
-
-        return;
-
-    }
+let cameraId = cameras[0].id;
 
 
-    await htmlScanner.start(
+// Prefer back camera
+const backCamera = cameras.find(camera => {
 
-        cameras[0].id,
+    const label = camera.label.toLowerCase();
+
+    return (
+        label.includes("back") ||
+        label.includes("rear") ||
+        label.includes("environment")
+    );
+
+});
+
+
+if(backCamera){
+
+    cameraId = backCamera.id;
+
+}
+
+
+await htmlScanner.start(
+
+    cameraId,
 
         {
             fps:10,
