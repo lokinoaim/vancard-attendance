@@ -7,21 +7,11 @@ const WEB_APP_URL =
 "https://script.google.com/macros/s/AKfycbym0dHBkFFQxrswsmL2NLBDXrZsXQSMwMi1TJQeyu2SJv1wNEXhy3IScN98sJhLegPx/exec";
 
 
+/* =====================================================
+   HTML ELEMENTS
+===================================================== */
+
 const eventSelect = document.getElementById("eventSelect");
-const refreshEvents = document.getElementById("refreshEvents");
-
-const startScanner = document.getElementById("startScanner");
-const stopScanner = document.getElementById("stopScanner");
-
-const connectionStatus = document.getElementById("connectionStatus");
-const scannerMessage = document.getElementById("scannerMessage");
-const activityLog = document.getElementById("activityLog");
-
-const memberId = document.getElementById("memberId");
-const memberName = document.getElementById("memberName");
-const memberCourse = document.getElementById("memberCourse");
-const memberYear = document.getElementById("memberYear");
-const attendanceStatus = document.getElementById("attendanceStatus");
 const refreshEvents = document.getElementById("refreshEvents");
 
 const startScanner = document.getElementById("startScanner");
@@ -90,7 +80,6 @@ function setOffline(){
 }
 
 
-
 /* =====================================================
    MEMBER DISPLAY
 ===================================================== */
@@ -117,7 +106,6 @@ function displayMember(data){
 }
 
 
-
 /* =====================================================
    LOAD EVENTS
 ===================================================== */
@@ -138,61 +126,40 @@ async function loadEvents(){
         const data = await response.json();
 
 
-        if(!data.success){
-
-            throw new Error(data.message);
-
-        }
-
-
         eventSelect.innerHTML="";
 
 
         data.events.forEach(event=>{
 
-
             const option =
             document.createElement("option");
 
-
-            option.value=event;
-
-            option.textContent=event;
-
+            option.value = event;
+            option.textContent = event;
 
             eventSelect.appendChild(option);
-
 
         });
 
 
         setOnline();
 
-
         scannerMessage.textContent =
         "Events loaded successfully.";
-
 
         addLog("Events loaded.");
 
 
     }catch(error){
 
-
         console.error(error);
 
-
         setOffline();
-
 
         scannerMessage.textContent =
         "Unable to connect to server.";
 
-
-        addLog(
-        "Connection failed."
-        );
-
+        addLog("Connection failed.");
 
     }
 
@@ -206,7 +173,9 @@ async function loadEvents(){
 
 async function startQRScanner(){
 
-    if(scannerRunning)return;
+    if(scannerRunning){
+        return;
+    }
 
 
     htmlScanner = new Html5Qrcode("reader");
@@ -216,9 +185,9 @@ async function startQRScanner(){
     await Html5Qrcode.getCameras();
 
 
-    if(!cameras.length){
+    if(cameras.length === 0){
 
-        alert("No camera found.");
+        alert("No camera detected.");
 
         return;
 
@@ -239,10 +208,10 @@ async function startQRScanner(){
     );
 
 
-    scannerRunning=true;
+    scannerRunning = true;
 
 
-    scannerMessage.textContent=
+    scannerMessage.textContent =
     "Scanner running.";
 
 }
@@ -251,7 +220,9 @@ async function startQRScanner(){
 
 async function stopQRScanner(){
 
-    if(!scannerRunning)return;
+    if(!scannerRunning){
+        return;
+    }
 
 
     await htmlScanner.stop();
@@ -262,7 +233,7 @@ async function stopQRScanner(){
     scannerRunning=false;
 
 
-    scannerMessage.textContent=
+    scannerMessage.textContent =
     "Scanner stopped.";
 
 }
@@ -270,13 +241,15 @@ async function stopQRScanner(){
 
 
 /* =====================================================
-   QR RESULT
+   QR PROCESSING
 ===================================================== */
 
 async function onScanSuccess(decodedText){
 
 
-    if(processingScan)return;
+    if(processingScan){
+        return;
+    }
 
 
     processingScan=true;
@@ -286,12 +259,10 @@ async function onScanSuccess(decodedText){
     decodedText.trim();
 
 
-
     try{
 
 
-        const response =
-        await fetch(
+        const response = await fetch(
 
             WEB_APP_URL,
 
@@ -300,9 +271,8 @@ async function onScanSuccess(decodedText){
             method:"POST",
 
             headers:{
-            "Content-Type":"text/plain"
+                "Content-Type":"text/plain"
             },
-
 
             body:JSON.stringify({
 
@@ -313,7 +283,6 @@ async function onScanSuccess(decodedText){
                 event:eventSelect.value
 
             })
-
 
             }
 
@@ -327,20 +296,17 @@ async function onScanSuccess(decodedText){
 
         if(result.success){
 
-
             displayMember(result);
 
-
             addLog(
-            result.name+" marked Present."
+                result.name +
+                " marked Present."
             );
 
 
         }else{
 
-
             addLog(result.message);
-
 
         }
 
@@ -348,17 +314,11 @@ async function onScanSuccess(decodedText){
 
     }catch(error){
 
-
         console.error(error);
 
-
-        addLog(
-        "Attendance failed."
-        );
-
+        addLog("Attendance failed.");
 
     }
-
 
 
     setTimeout(()=>{
@@ -366,7 +326,6 @@ async function onScanSuccess(decodedText){
         processingScan=false;
 
     },1500);
-
 
 
 }
@@ -377,25 +336,32 @@ async function onScanSuccess(decodedText){
    BUTTONS
 ===================================================== */
 
-
-startScanner.onclick =
-startQRScanner;
-
-
-stopScanner.onclick =
-stopQRScanner;
+startScanner.addEventListener(
+"click",
+startQRScanner
+);
 
 
-refreshEvents.onclick =
-loadEvents;
+stopScanner.addEventListener(
+"click",
+stopQRScanner
+);
+
+
+refreshEvents.addEventListener(
+"click",
+loadEvents
+);
 
 
 
 /* =====================================================
-   START
+   INITIALIZE
 ===================================================== */
 
-window.onload = async()=>{
+window.addEventListener(
+"load",
+async()=>{
 
     clearMember();
 
@@ -403,4 +369,4 @@ window.onload = async()=>{
 
     await loadEvents();
 
-};
+});
