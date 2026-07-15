@@ -2,8 +2,8 @@
    VANCard Attendance System
    Frontend Script
 ===================================================== */
-
-https://script.google.com/macros/s/AKfycbym0dHBkFFQxrswsmL2NLBDXrZsXQSMwMi1TJQeyu2SJv1wNEXhy3IScN98sJhLegPx/exec
+const WEB_APP_URL =
+"https://script.google.com/macros/s/AKfycbym0dHBkFFQxrswsmL2NLBDXrZsXQSMwMi1TJQeyu2SJv1wNEXhy3IScN98sJhLegPx/exec";
 
 /* =====================================================
    HTML ELEMENTS
