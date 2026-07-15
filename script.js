@@ -3,8 +3,7 @@
    Frontend Script
 ===================================================== */
 
-const WEB_APP_URL =
-"https://script.google.com/macros/s/AKfycbzGqaekHG1nWDtMvfFaNCSAV1xdG9wgQGzqFXtwq9qnbbp2H9BIoOtvxbyoMtijHSy0/exec";
+https://script.google.com/macros/s/AKfycbym0dHBkFFQxrswsmL2NLBDXrZsXQSMwMi1TJQeyu2SJv1wNEXhy3IScN98sJhLegPx/exec
 
 /* =====================================================
    HTML ELEMENTS
