@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <title>VANCard Attendance System</title>
+
+    <meta
+        name="theme-color"
+        content="#0b3d91">
+
+    <meta
+        name="description"
+        content="VANCard Attendance System for JPIA">
+
+    <!-- Google Font -->
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- CSS -->
+
+    <link
+        rel="stylesheet"
+        href="style.css">
+
+    <!-- QR Scanner -->
+
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- ================= HEADER ================= -->
+
+    <header class="header">
+
+        <div class="logo">
+
+            <div class="logo-circle">
+                VAN
+            </div>
+
+            <div>
+
+                <h1>
+                    VANCard Attendance System
+                </h1>
+
+                <p>
+                    Junior Philippine Institute of Accountants
+                </p>
+
+            </div>
+
+        </div>
+
+        <div
+            id="connectionStatus"
+            class="connection offline">
+
+            Connecting...
+
+        </div>
+
+    </header>
+
+    <!-- ================= MAIN ================= -->
+
+    <main>
+
+        <!-- EVENT -->
+
+        <section class="card">
+
+            <div class="card-title">
+
+                Event Selection
+
+            </div>
+
+            <label>
+
+                Select Event
+
+            </label>
+
+            <select id="eventSelect">
+
+                <option value="">
+
+                    Loading Events...
+
+                </option>
+
+            </select>
+
+            <button
+                id="refreshEvents">
+
+                Refresh Events
+
+            </button>
+
+        </section>
+
+        <!-- SCANNER -->
+
+        <section class="card">
+
+            <div class="card-title">
+
+                QR Code Scanner
+
+            </div>
+
+            <div id="reader"></div>
+
+            <div class="button-group">
+
+                <button
+                    id="startScanner"
+                    class="primary">
+
+                    Start Scanner
+
+                </button>
+
+                <button
+                    id="stopScanner"
+                    class="danger">
+
+                    Stop Scanner
+
+                </button>
+
+            </div>
+
+            <div
+                id="scannerMessage"
+                class="scanner-message">
+
+                Select an event then press Start Scanner.
+
+            </div>
+
+        </section>
+
+        <!-- RESULT -->
+
+        <section class="card">
+
+            <div class="card-title">
+
+                Attendance Result
+
+            </div>
+
+            <table>
+
+                <tr>
+
+                    <th>Member ID</th>
+
+                    <td id="memberId">-</td>
+
+                </tr>
+
+                <tr>
+
+                    <th>Name</th>
+
+                    <td id="memberName">-</td>
+
+                </tr>
+
+                <tr>
+
+                    <th>Course</th>
+
+                    <td id="memberCourse">-</td>
+
+                </tr>
+
+                <tr>
+
+                    <th>Year</th>
+
+                    <td id="memberYear">-</td>
+
+                </tr>
+
+                <tr>
+
+                    <th>Status</th>
+
+                    <td id="attendanceStatus">
+
+                        Waiting...
+
+                    </td>
+
+                </tr>
+
+            </table>
+
+        </section>
+
+        <!-- ACTIVITY -->
+
+        <section class="card">
+
+            <div class="card-title">
+
+                Activity Log
+
+            </div>
+
+            <div
+                id="activityLog"
+                class="activity-log">
+
+                <div>
+
+                    System initialized.
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+
+    <footer>
+
+        VANCard Attendance System © 2026
+
+    </footer>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+
+</html>
