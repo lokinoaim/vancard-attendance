@@ -39,14 +39,14 @@ let processingScan = false;
 
 
 /* =====================================================
-   LOGGING
+   LOG
 ===================================================== */
 
 function addLog(message){
 
     const row = document.createElement("div");
 
-    row.innerHTML =
+    row.textContent =
     new Date().toLocaleTimeString()
     + " - "
     + message;
@@ -57,7 +57,7 @@ function addLog(message){
 
 
 /* =====================================================
-   STATUS
+   CONNECTION STATUS
 ===================================================== */
 
 function setOnline(){
@@ -86,24 +86,25 @@ function setOffline(){
 
 function clearMember(){
 
-    memberId.textContent="-";
-    memberName.textContent="-";
-    memberCourse.textContent="-";
-    memberYear.textContent="-";
-    attendanceStatus.textContent="Waiting...";
+    memberId.textContent = "-";
+    memberName.textContent = "-";
+    memberCourse.textContent = "-";
+    memberYear.textContent = "-";
+    attendanceStatus.textContent = "Waiting...";
 
 }
 
 
 function displayMember(data){
 
-    memberId.textContent=data.memberID;
-    memberName.textContent=data.name;
-    memberCourse.textContent=data.course;
-    memberYear.textContent=data.year;
-    attendanceStatus.textContent=data.status;
+    memberId.textContent = data.memberID;
+    memberName.textContent = data.name;
+    memberCourse.textContent = data.course;
+    memberYear.textContent = data.year;
+    attendanceStatus.textContent = data.status;
 
 }
+
 
 
 /* =====================================================
@@ -118,15 +119,24 @@ async function loadEvents(){
         "Loading events...";
 
 
-        const response = await fetch(
+        const response =
+        await fetch(
             WEB_APP_URL + "?action=events"
         );
 
 
-        const data = await response.json();
+        const data =
+        await response.json();
 
 
-        eventSelect.innerHTML="";
+        if(!data.success){
+
+            throw new Error(data.message);
+
+        }
+
+
+        eventSelect.innerHTML = "";
 
 
         data.events.forEach(event=>{
@@ -144,8 +154,10 @@ async function loadEvents(){
 
         setOnline();
 
+
         scannerMessage.textContent =
         "Events loaded successfully.";
+
 
         addLog("Events loaded.");
 
@@ -167,7 +179,6 @@ async function loadEvents(){
 
 
 
-
 /* =====================================================
    QR SCANNER
 ===================================================== */
@@ -175,47 +186,72 @@ async function loadEvents(){
 async function startQRScanner(){
 
     if(scannerRunning){
+
         return;
+
     }
 
-    htmlScanner = new Html5Qrcode("reader");
+
+    htmlScanner =
+    new Html5Qrcode("reader");
 
 
-    await htmlScanner.start(
 
-        {
-            facingMode: {
-                exact: "environment"
-            }
-        },
-
-        {
-            fps:10,
-            qrbox:250
-        },
-
-        onScanSuccess
-
-    );
+    try{
 
 
-    scannerRunning = true;
+        await htmlScanner.start(
+
+            {
+                facingMode:{
+                    exact:"environment"
+                }
+            },
 
 
-    scannerMessage.textContent =
-    "Scanner running.";
+            {
+                fps:10,
+                qrbox:250
+            },
+
+
+            onScanSuccess
+
+        );
+
+
+        scannerRunning = true;
+
+
+        scannerMessage.textContent =
+        "Scanner running.";
+
+
+        addLog("Scanner started.");
+
+
+    }catch(error){
+
+
+        console.error(error);
+
+
+        scannerMessage.textContent =
+        "Camera failed.";
+
+
+    }
 
 }
-
-
-   
 
 
 
 async function stopQRScanner(){
 
     if(!scannerRunning){
+
         return;
+
     }
 
 
@@ -224,7 +260,7 @@ async function stopQRScanner(){
     await htmlScanner.clear();
 
 
-    scannerRunning=false;
+    scannerRunning = false;
 
 
     scannerMessage.textContent =
@@ -235,18 +271,20 @@ async function stopQRScanner(){
 
 
 /* =====================================================
-   QR PROCESSING
+   QR RESULT
 ===================================================== */
 
 async function onScanSuccess(decodedText){
 
 
     if(processingScan){
+
         return;
+
     }
 
 
-    processingScan=true;
+    processingScan = true;
 
 
     const memberID =
@@ -256,27 +294,29 @@ async function onScanSuccess(decodedText){
     try{
 
 
-        const response = await fetch(
+        const response =
+        await fetch(
 
             WEB_APP_URL,
 
             {
 
-            method:"POST",
+                method:"POST",
 
-            headers:{
-                "Content-Type":"text/plain"
-            },
+                headers:{
+                    "Content-Type":"text/plain"
+                },
 
-            body:JSON.stringify({
 
-                action:"attendance",
+                body:JSON.stringify({
 
-                memberID:memberID,
+                    action:"attendance",
 
-                event:eventSelect.value
+                    memberID:memberID,
 
-            })
+                    event:eventSelect.value
+
+                })
 
             }
 
@@ -293,26 +333,28 @@ async function onScanSuccess(decodedText){
             displayMember(result);
 
             addLog(
-                result.name +
-                " marked Present."
+            result.name + " marked Present."
             );
 
 
         }else{
 
+
             addLog(result.message);
+
 
         }
 
 
-
     }catch(error){
+
 
         console.error(error);
 
         addLog("Attendance failed.");
 
     }
+
 
 
     setTimeout(()=>{
@@ -350,17 +392,17 @@ loadEvents
 
 
 /* =====================================================
-   INITIALIZE
+   START SYSTEM
 ===================================================== */
 
 window.addEventListener(
 "load",
-async()=>{
+()=>{
 
     clearMember();
 
     addLog("System initialized.");
 
-    await loadEvents();
+    loadEvents();
 
 });
