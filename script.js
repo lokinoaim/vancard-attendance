@@ -4,7 +4,7 @@
 ===================================================== */
 
 const WEB_APP_URL =
-"https://script.google.com/macros/s/AKfycbzbs6batR9gQFp9x-olPlilAHBJ0P63fLswNH6ESOC7fJfwS7ug8ujdJurGOV-1y2Cp/exec";
+"https://script.google.com/macros/s/AKfycbzGqaekHG1nWDtMvfFaNCSAV1xdG9wgQGzqFXtwq9qnbbp2H9BIoOtvxbyoMtijHSy0/exec";
 
 /* =====================================================
    HTML ELEMENTS
