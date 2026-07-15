@@ -2,57 +2,41 @@
    VANCard Attendance System
    Frontend Script
 ===================================================== */
+
 const WEB_APP_URL =
 "https://script.google.com/macros/s/AKfycbym0dHBkFFQxrswsmL2NLBDXrZsXQSMwMi1TJQeyu2SJv1wNEXhy3IScN98sJhLegPx/exec";
+
 
 /* =====================================================
    HTML ELEMENTS
 ===================================================== */
 
 const eventSelect = document.getElementById("eventSelect");
+const refreshEvents = document.getElementById("refreshEvents");
 
-const refreshEvents =
-document.getElementById("refreshEvents");
+const startScanner = document.getElementById("startScanner");
+const stopScanner = document.getElementById("stopScanner");
 
-const startScanner =
-document.getElementById("startScanner");
+const connectionStatus = document.getElementById("connectionStatus");
 
-const stopScanner =
-document.getElementById("stopScanner");
+const scannerMessage = document.getElementById("scannerMessage");
+const activityLog = document.getElementById("activityLog");
 
-const connectionStatus =
-document.getElementById("connectionStatus");
+const memberId = document.getElementById("memberId");
+const memberName = document.getElementById("memberName");
+const memberCourse = document.getElementById("memberCourse");
+const memberYear = document.getElementById("memberYear");
+const attendanceStatus = document.getElementById("attendanceStatus");
 
-const scannerMessage =
-document.getElementById("scannerMessage");
-
-const activityLog =
-document.getElementById("activityLog");
-
-const memberId =
-document.getElementById("memberId");
-
-const memberName =
-document.getElementById("memberName");
-
-const memberCourse =
-document.getElementById("memberCourse");
-
-const memberYear =
-document.getElementById("memberYear");
-
-const attendanceStatus =
-document.getElementById("attendanceStatus");
 
 /* =====================================================
-   GLOBAL VARIABLES
+   VARIABLES
 ===================================================== */
 
 let htmlScanner = null;
-
 let scannerRunning = false;
-
 let processingScan = false;
+
 
 /* =====================================================
    LOGGING
@@ -60,45 +44,42 @@ let processingScan = false;
 
 function addLog(message){
 
-    const time = new Date().toLocaleTimeString();
-
     const row = document.createElement("div");
 
     row.innerHTML =
-    "<strong>" +
-    time +
-    "</strong> - " +
-    message;
+    new Date().toLocaleTimeString()
+    + " - "
+    + message;
 
     activityLog.prepend(row);
 
 }
 
+
 /* =====================================================
-   CONNECTION STATUS
+   STATUS
 ===================================================== */
 
 function setOnline(){
 
-    connectionStatus.textContent =
-    "Online";
+    connectionStatus.textContent = "Online";
 
     connectionStatus.classList.remove("offline");
-
     connectionStatus.classList.add("online");
 
 }
 
+
 function setOffline(){
 
-    connectionStatus.textContent =
-    "Offline";
+    connectionStatus.textContent = "Offline";
 
     connectionStatus.classList.remove("online");
-
     connectionStatus.classList.add("offline");
 
 }
+
+
 
 /* =====================================================
    MEMBER DISPLAY
@@ -106,43 +87,26 @@ function setOffline(){
 
 function clearMember(){
 
-    memberId.textContent = "-";
-
-    memberName.textContent = "-";
-
-    memberCourse.textContent = "-";
-
-    memberYear.textContent = "-";
-
-    attendanceStatus.textContent =
-    "Waiting...";
-
-    attendanceStatus.style.color =
-    "#16a34a";
+    memberId.textContent="-";
+    memberName.textContent="-";
+    memberCourse.textContent="-";
+    memberYear.textContent="-";
+    attendanceStatus.textContent="Waiting...";
 
 }
+
 
 function displayMember(data){
 
-    memberId.textContent =
-    data.memberID;
-
-    memberName.textContent =
-    data.name;
-
-    memberCourse.textContent =
-    data.course;
-
-    memberYear.textContent =
-    data.year;
-
-    attendanceStatus.textContent =
-    data.status;
-
-    attendanceStatus.style.color =
-    "#16a34a";
+    memberId.textContent=data.memberID;
+    memberName.textContent=data.name;
+    memberCourse.textContent=data.course;
+    memberYear.textContent=data.year;
+    attendanceStatus.textContent=data.status;
 
 }
+
+
 
 /* =====================================================
    LOAD EVENTS
@@ -155,408 +119,278 @@ async function loadEvents(){
         scannerMessage.textContent =
         "Loading events...";
 
-        const response =
-        await fetch(
-            WEB_APP_URL +
-            "?action=events"
+
+        const response = await fetch(
+            WEB_APP_URL + "?action=events"
         );
 
-        const data =
-        await response.json();
+
+        const data = await response.json();
+
 
         if(!data.success){
 
-            throw new Error(
-                "Unable to load events."
-            );
+            throw new Error(data.message);
 
         }
 
-        eventSelect.innerHTML = "";
+
+        eventSelect.innerHTML="";
+
 
         data.events.forEach(event=>{
+
 
             const option =
             document.createElement("option");
 
-            option.value = event;
 
-            option.textContent = event;
+            option.value=event;
+
+            option.textContent=event;
+
 
             eventSelect.appendChild(option);
 
+
         });
+
+
+        setOnline();
+
 
         scannerMessage.textContent =
         "Events loaded successfully.";
 
-        setOnline();
 
-        addLog(
-            "Events loaded."
-        );
+        addLog("Events loaded.");
 
-    }
 
-    catch(error){
+    }catch(error){
+
+
+        console.error(error);
+
 
         setOffline();
+
 
         scannerMessage.textContent =
         "Unable to connect to server.";
 
+
         addLog(
-            "Connection failed."
+        "Connection failed."
         );
 
+
     }
 
 }
+
+
 
 /* =====================================================
-   START QR SCANNER
+   QR SCANNER
 ===================================================== */
 
-async function startQRScanner() {
+async function startQRScanner(){
 
-    if (scannerRunning) {
+    if(scannerRunning)return;
+
+
+    htmlScanner = new Html5Qrcode("reader");
+
+
+    const cameras =
+    await Html5Qrcode.getCameras();
+
+
+    if(!cameras.length){
+
+        alert("No camera found.");
+
         return;
-    }
-
-    if (eventSelect.value === "") {
-
-        alert("Please select an event first.");
-
-        return;
 
     }
 
-    try {
 
-        htmlScanner = new Html5Qrcode("reader");
+    await htmlScanner.start(
 
-        const cameras = await Html5Qrcode.getCameras();
+        cameras[0].id,
 
-        if (!cameras || cameras.length === 0) {
+        {
+            fps:10,
+            qrbox:250
+        },
 
-            alert("No camera detected.");
+        onScanSuccess
 
-            return;
+    );
 
-        }
 
-        let cameraId = cameras[0].id;
+    scannerRunning=true;
 
-        if (cameras.length > 1) {
 
-            const backCamera = cameras.find(camera => {
-
-                const name = camera.label.toLowerCase();
-
-                return (
-                    name.includes("back") ||
-                    name.includes("rear") ||
-                    name.includes("environment")
-                );
-
-            });
-
-            if (backCamera) {
-
-                cameraId = backCamera.id;
-
-            }
-
-        }
-
-        await htmlScanner.start(
-
-            cameraId,
-
-            {
-
-                fps: 10,
-
-                qrbox: {
-
-                    width: 250,
-
-                    height: 250
-
-                }
-
-            },
-
-            onScanSuccess,
-
-            onScanFailure
-
-        );
-
-        scannerRunning = true;
-
-        scannerMessage.textContent =
-            "Scanner is running...";
-
-        addLog("QR Scanner started.");
-
-    }
-
-    catch (error) {
-
-        console.error(error);
-
-        scannerMessage.textContent =
-            "Unable to start camera.";
-
-        addLog("Camera failed to start.");
-
-    }
+    scannerMessage.textContent=
+    "Scanner running.";
 
 }
+
+
+
+async function stopQRScanner(){
+
+    if(!scannerRunning)return;
+
+
+    await htmlScanner.stop();
+
+    await htmlScanner.clear();
+
+
+    scannerRunning=false;
+
+
+    scannerMessage.textContent=
+    "Scanner stopped.";
+
+}
+
+
 
 /* =====================================================
-   STOP QR SCANNER
+   QR RESULT
 ===================================================== */
 
-async function stopQRScanner() {
+async function onScanSuccess(decodedText){
 
-    if (!scannerRunning) {
 
-        return;
+    if(processingScan)return;
 
-    }
 
-    try {
+    processingScan=true;
 
-        await htmlScanner.stop();
 
-        await htmlScanner.clear();
+    const memberID =
+    decodedText.trim();
 
-        scannerRunning = false;
 
-        scannerMessage.textContent =
-            "Scanner stopped.";
 
-        addLog("Scanner stopped.");
+    try{
 
-    }
 
-    catch (error) {
-
-        console.error(error);
-
-    }
-
-}
-
-/* =====================================================
-   QR CALLBACKS
-===================================================== */
-
-function onScanFailure(error) {
-
-    // Ignore scan failures
-
-}
-
-async function onScanSuccess(decodedText) {
-
-    if (processingScan) {
-
-        return;
-
-    }
-
-    processingScan = true;
-
-    const memberID = decodedText.trim();
-
-    scannerMessage.textContent =
-        "Processing attendance...";
-
-    addLog("QR scanned: " + memberID);
-
-    try {
-
-        const response = await fetch(
+        const response =
+        await fetch(
 
             WEB_APP_URL,
 
             {
 
-                method: "POST",
+            method:"POST",
 
-                headers: {
+            headers:{
+            "Content-Type":"text/plain"
+            },
 
-                    "Content-Type": "application/json"
 
-                },
+            body:JSON.stringify({
 
-                body: JSON.stringify({
+                action:"attendance",
 
-                    action: "attendance",
+                memberID:memberID,
 
-                    memberID: memberID,
+                event:eventSelect.value
 
-                    event: eventSelect.value
+            })
 
-                })
 
             }
 
         );
 
-        const result = await response.json();
 
-        if (result.success) {
+        const result =
+        await response.json();
+
+
+
+        if(result.success){
+
 
             displayMember(result);
 
-            scannerMessage.textContent =
-                "Attendance recorded successfully.";
 
             addLog(
-
-                result.name +
-                " marked Present."
-
+            result.name+" marked Present."
             );
 
-        }
 
-        else {
+        }else{
 
-            attendanceStatus.textContent =
-                result.message;
-
-            attendanceStatus.style.color =
-                "#dc2626";
-
-            scannerMessage.textContent =
-                result.message;
 
             addLog(result.message);
 
+
         }
 
-    }
 
-    catch (error) {
+
+    }catch(error){
+
 
         console.error(error);
 
-        scannerMessage.textContent =
-            "Server connection failed.";
 
-        addLog("Network error.");
+        addLog(
+        "Attendance failed."
+        );
+
 
     }
 
-    setTimeout(function () {
 
-        processingScan = false;
 
-    }, 1500);
+    setTimeout(()=>{
+
+        processingScan=false;
+
+    },1500);
+
+
 
 }
-/* =====================================================
-   BUTTON EVENTS
-===================================================== */
 
-startScanner.addEventListener("click", async () => {
 
-    await startQRScanner();
-
-});
-
-stopScanner.addEventListener("click", async () => {
-
-    await stopQRScanner();
-
-});
-
-refreshEvents.addEventListener("click", () => {
-
-    loadEvents();
-
-});
 
 /* =====================================================
-   PAGE VISIBILITY
+   BUTTONS
 ===================================================== */
 
-document.addEventListener("visibilitychange", async () => {
 
-    if (document.hidden) {
+startScanner.onclick =
+startQRScanner;
 
-        if (scannerRunning) {
 
-            await stopQRScanner();
+stopScanner.onclick =
+stopQRScanner;
 
-        }
 
-    }
+refreshEvents.onclick =
+loadEvents;
 
-});
+
 
 /* =====================================================
-   NETWORK STATUS
+   START
 ===================================================== */
 
-window.addEventListener("online", () => {
-
-    setOnline();
-
-    addLog("Internet connection restored.");
-
-});
-
-window.addEventListener("offline", () => {
-
-    setOffline();
-
-    addLog("Internet connection lost.");
-
-});
-
-/* =====================================================
-   INITIALIZE APPLICATION
-===================================================== */
-
-window.addEventListener("load", async () => {
+window.onload = async()=>{
 
     clearMember();
 
-    scannerMessage.textContent =
-        "Connecting to server...";
-
-    addLog("Initializing application...");
+    addLog("System initialized.");
 
     await loadEvents();
 
-});
-
-/* =====================================================
-   SAFETY CHECK
-===================================================== */
-
-window.addEventListener("beforeunload", async () => {
-
-    if (scannerRunning) {
-
-        try {
-
-            await htmlScanner.stop();
-
-            await htmlScanner.clear();
-
-        }
-
-        catch (e) {
-
-        }
-
-    }
-
-});
+};
