@@ -7,11 +7,21 @@ const WEB_APP_URL =
 "https://script.google.com/macros/s/AKfycbym0dHBkFFQxrswsmL2NLBDXrZsXQSMwMi1TJQeyu2SJv1wNEXhy3IScN98sJhLegPx/exec";
 
 
-/* =====================================================
-   HTML ELEMENTS
-===================================================== */
-
 const eventSelect = document.getElementById("eventSelect");
+const refreshEvents = document.getElementById("refreshEvents");
+
+const startScanner = document.getElementById("startScanner");
+const stopScanner = document.getElementById("stopScanner");
+
+const connectionStatus = document.getElementById("connectionStatus");
+const scannerMessage = document.getElementById("scannerMessage");
+const activityLog = document.getElementById("activityLog");
+
+const memberId = document.getElementById("memberId");
+const memberName = document.getElementById("memberName");
+const memberCourse = document.getElementById("memberCourse");
+const memberYear = document.getElementById("memberYear");
+const attendanceStatus = document.getElementById("attendanceStatus");
 const refreshEvents = document.getElementById("refreshEvents");
 
 const startScanner = document.getElementById("startScanner");
