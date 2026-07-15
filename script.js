@@ -167,9 +167,6 @@ async function loadEvents(){
 
 
 
-/* =====================================================
-   QR SCANNER
-===================================================== */
 
 /* =====================================================
    QR SCANNER
@@ -211,10 +208,7 @@ async function startQRScanner(){
 }
 
 
-    scannerMessage.textContent =
-    "Scanner running.";
-
-}
+   
 
 
 
