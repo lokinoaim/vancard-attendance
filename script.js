@@ -321,13 +321,19 @@ async function onScanSuccess(decodedText){
 
         }
 
-    }catch(error){
+   }catch(error){
 
-        console.error(error);
-        alert("Attendance failed:\n" + error);
-        addLog("Attendance failed: " + error);
+    console.error(error);
 
-    }
+    alert(
+        "Attendance failed\n\n" +
+        "Name: " + error.name +
+        "\nMessage: " + error.message
+    );
+
+    addLog(error.message);
+
+}
 
     processingScan = false;
 }
