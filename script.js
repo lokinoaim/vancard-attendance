@@ -276,14 +276,14 @@ async function stopQRScanner(){
 
 async function onScanSuccess(decodedText){
 
-    console.log("QR detected:", decodedText);
-    alert("QR detected: " + decodedText);
-
     if(processingScan){
         return;
     }
 
     processingScan = true;
+
+    // Stop scanner immediately after detecting a QR
+    await stopQRScanner();
 
     const memberID = decodedText.trim();
 
@@ -304,22 +304,18 @@ async function onScanSuccess(decodedText){
             }
         );
 
-        // Read the response as text first
-        const text = await response.text();
-
-        console.log("Server response:", text);
-        alert("Server response:\n" + text);
-
-        const result = JSON.parse(text);
+        const result = await response.json();
 
         if(result.success){
 
             displayMember(result);
 
+            scannerMessage.textContent = "Attendance recorded successfully!";
             addLog(result.name + " marked Present.");
 
         }else{
 
+            scannerMessage.textContent = result.message;
             addLog(result.message);
             alert(result.message);
 
@@ -328,21 +324,13 @@ async function onScanSuccess(decodedText){
     }catch(error){
 
         console.error(error);
-
-        alert("ERROR:\n" + error);
-
+        alert("Attendance failed:\n" + error);
         addLog("Attendance failed: " + error);
 
     }
 
-    setTimeout(() => {
-
-        processingScan = false;
-
-    }, 1500);
-
+    processingScan = false;
 }
-
 
 /* =====================================================
    BUTTONS
