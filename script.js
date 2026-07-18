@@ -282,27 +282,22 @@ async function onScanSuccess(decodedText){
 
     processingScan = true;
 
-    // Stop scanner immediately after detecting a QR
     await stopQRScanner();
 
     const memberID = decodedText.trim();
 
     try{
 
-        const response = await fetch(
-            WEB_APP_URL,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    action: "attendance",
-                    memberID: memberID,
-                    event: eventSelect.value
-                })
-            }
-        );
+        const formData = new URLSearchParams();
+
+        formData.append("action", "attendance");
+        formData.append("memberID", memberID);
+        formData.append("event", eventSelect.value);
+
+        const response = await fetch(WEB_APP_URL, {
+            method: "POST",
+            body: formData
+        });
 
         const result = await response.json();
 
@@ -321,19 +316,19 @@ async function onScanSuccess(decodedText){
 
         }
 
-   }catch(error){
+    }catch(error){
 
-    console.error(error);
+        console.error(error);
 
-    alert(
-        "Attendance failed\n\n" +
-        "Name: " + error.name +
-        "\nMessage: " + error.message
-    );
+        alert(
+            "Attendance failed\n\n" +
+            "Name: " + error.name +
+            "\nMessage: " + error.message
+        );
 
-    addLog(error.message);
+        addLog(error.message);
 
-}
+    }
 
     processingScan = false;
 }
