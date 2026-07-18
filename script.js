@@ -275,7 +275,8 @@ async function stopQRScanner(){
 ===================================================== */
 
 async function onScanSuccess(decodedText){
-
+console.log("QR detected:", decodedText);
+alert("QR detected: " + decodedText);
     if(processingScan){
         return;
     }
