@@ -276,78 +276,48 @@ async function stopQRScanner(){
 
 async function onScanSuccess(decodedText){
 
-
     if(processingScan){
-
         return;
-
     }
-
 
     processingScan = true;
 
-
-    const memberID =
-    decodedText.trim();
-
+    const memberID = decodedText.trim();
 
     try{
 
-
-        const response =
-        await fetch(
-
+        const response = await fetch(
             WEB_APP_URL,
-
             {
+                method: "POST",
 
-                method:"POST",
-
-                headers:{
-                    "Content-Type":"text/plain"
+                headers: {
+                    "Content-Type": "application/json"
                 },
 
-
-                body:JSON.stringify({
-
-                    action:"attendance",
-
-                    memberID:memberID,
-
-                    event:eventSelect.value
-
+                body: JSON.stringify({
+                    action: "attendance",
+                    memberID: memberID,
+                    event: eventSelect.value
                 })
-
             }
-
         );
 
-
-        const result =
-        await response.json();
-
-
+        const result = await response.json();
 
         if(result.success){
 
             displayMember(result);
 
-            addLog(
-            result.name + " marked Present."
-            );
-
+            addLog(result.name + " marked Present.");
 
         }else{
 
-
             addLog(result.message);
-
 
         }
 
-
     }catch(error){
-
 
         console.error(error);
 
@@ -355,14 +325,11 @@ async function onScanSuccess(decodedText){
 
     }
 
+    setTimeout(() => {
 
+        processingScan = false;
 
-    setTimeout(()=>{
-
-        processingScan=false;
-
-    },1500);
-
+    }, 1500);
 
 }
 
