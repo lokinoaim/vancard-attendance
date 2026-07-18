@@ -275,8 +275,10 @@ async function stopQRScanner(){
 ===================================================== */
 
 async function onScanSuccess(decodedText){
-console.log("QR detected:", decodedText);
-alert("QR detected: " + decodedText);
+
+    console.log("QR detected:", decodedText);
+    alert("QR detected: " + decodedText);
+
     if(processingScan){
         return;
     }
@@ -291,11 +293,9 @@ alert("QR detected: " + decodedText);
             WEB_APP_URL,
             {
                 method: "POST",
-
                 headers: {
                     "Content-Type": "application/json"
                 },
-
                 body: JSON.stringify({
                     action: "attendance",
                     memberID: memberID,
@@ -304,7 +304,13 @@ alert("QR detected: " + decodedText);
             }
         );
 
-        const result = await response.json();
+        // Read the response as text first
+        const text = await response.text();
+
+        console.log("Server response:", text);
+        alert("Server response:\n" + text);
+
+        const result = JSON.parse(text);
 
         if(result.success){
 
@@ -315,6 +321,7 @@ alert("QR detected: " + decodedText);
         }else{
 
             addLog(result.message);
+            alert(result.message);
 
         }
 
@@ -322,7 +329,9 @@ alert("QR detected: " + decodedText);
 
         console.error(error);
 
-        addLog("Attendance failed.");
+        alert("ERROR:\n" + error);
+
+        addLog("Attendance failed: " + error);
 
     }
 
@@ -333,7 +342,6 @@ alert("QR detected: " + decodedText);
     }, 1500);
 
 }
-
 
 
 /* =====================================================
